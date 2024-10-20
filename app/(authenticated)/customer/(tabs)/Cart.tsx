@@ -1,8 +1,9 @@
 import CartItem from "@/components/customer/CartItem";
+import { customToast } from "@/components/shared/Toast";
 import UserAuthContext from "@/context/UserAuthContext";
 import { Cart, Item } from "@/types/cart";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponseHeaders } from "axios";
 import { useContext, useEffect, useState } from "react";
 import {
   FlatList,
@@ -40,8 +41,39 @@ const CartPage = () => {
     getCart();
   }, []);
 
-  const handlePayment = () => {
-    console.log("Payment button clicked");
+  const handlePayment = async () => {
+    if (cart !== null) {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        await axios.post(
+          "https://project-kdn1.onrender.com/api/cart/payment",
+          {
+            customerUsername: user?.username,
+          },
+          {
+            headers: {
+              token: `Bearer ${token}`,
+            },
+          }
+        );
+        setCart({
+          ...cart,
+          items: [],
+          totalPrice: 0,
+        });
+        customToast({
+          type: "success",
+          text1: "Success!",
+          text2: "Order placed successfully",
+        });
+      } catch (error: any) {
+        customToast({
+          type: "error",
+          text1: "Error",
+          text2: "Some error occurred while placing order",
+        });
+      }
+    }
   };
   const handleRefresh = async () => {
     setIsRefreshing(true);

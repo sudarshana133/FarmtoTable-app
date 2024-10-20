@@ -1,11 +1,24 @@
 import Navbar from "@/components/Navbar";
 import { Slot } from "expo-router";
-import { SafeAreaView, View } from "react-native";
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
+
 export default function _layout() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.safeArea}>
       <Navbar />
       <Slot />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+});

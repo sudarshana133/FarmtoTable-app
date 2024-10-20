@@ -62,7 +62,7 @@ export default function CropDetailSheet({
             },
           ],
           customerUsername: user?.username,
-          farmerUsername: item.farmerName,
+          farmerUsername: item.farmerUsername, // TODO: this should be changed to farmer username from farmer name
         },
         {
           headers: {
@@ -111,7 +111,7 @@ export default function CropDetailSheet({
         {/* Crop details */}
         <View style={styles.detailContainer}>
           <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.subtitle}>{item.farmerName}</Text>
+          <Text style={styles.subtitle}>{item.farmerUsername}</Text>
           <Text style={styles.detailText}>Address: {item.address}</Text>
           <Text style={styles.detailText}>Price: ₹{item.price}</Text>
           <Text style={styles.detailText}>

@@ -1,9 +1,19 @@
-export type Order = {
+import { Crop } from "./crop";
+
+export interface OrderItem {
     _id: string;
-    cropName: string;
+    crop: Crop;
+    quantity: number;
     price: number;
+}
+export interface Order {
+    _id: string;
     farmerUsername: string;
     customerUsername: string;
-    quantity: number;
     OrderPlaceTime: Date;
+    items: OrderItem[];
+    totalPrice: number;
+    pending: boolean;
+    paymentStatus: "Pending" | "Completed";
+    approved: boolean;
 }

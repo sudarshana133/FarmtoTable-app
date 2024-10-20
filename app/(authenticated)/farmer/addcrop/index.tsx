@@ -52,7 +52,7 @@ export default function AddCrop() {
         "https://project-kdn1.onrender.com/api/crop/addCrop",
         {
           name: cropName,
-          farmerName: user.name,
+          farmerUsername: user.username,
           address: user.address,
           quantity: Number(quantity),
           price: Number(price),

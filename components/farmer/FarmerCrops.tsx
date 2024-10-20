@@ -31,11 +31,11 @@ export default function FarmerCrops() {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem("token");
-      if (!token || !user?.name) return;
+      if (!token || !user?.username) return;
 
       const res = await axios.post(
         "https://project-kdn1.onrender.com/api/crop/farmercrops",
-        { farmer: user?.name },
+        { farmer: user?.username },
         {
           headers: { token: `Bearer ${token}` },
         }
@@ -64,10 +64,9 @@ export default function FarmerCrops() {
           "https://project-kdn1.onrender.com/api/crop/deletecrop",
           {
             headers: { token: "Bearer " + token },
-            data: { id: selected._id, name: user?.name },
+            data: { id: selected._id, name: user?.username },
           }
         );
-        setCrops(crops.filter((crop) => crop._id !== selected._id));
         customToast({
           text1: "Success",
           text2: "Deleted crop successfully",

@@ -13,7 +13,6 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import UserAuthContext from "@/context/UserAuthContext";
-import Toast from "react-native-toast-message";
 import { verifyToken } from "@/utils/auth";
 import { customToast } from "@/components/shared/Toast";
 
@@ -61,7 +60,7 @@ export default function UpdateProfile() {
       });
     } else if (password !== confirmPassword) {
       customToast({
-        type: "warning",
+        type: "error",
         text1: "Error",
         text2: "Passwords do not match",
       });

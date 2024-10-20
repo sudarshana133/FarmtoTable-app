@@ -1,17 +1,14 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  useColorScheme,
-} from "react-native";
-import Icon2 from "./icons/home/icon2";
+import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
+import { scale } from "react-native-size-matters";
 
 export default function Navbar() {
   return (
     <View style={styles.container}>
       <View style={styles.icon}>
-        <Icon2 />
+        <Image
+          source={require("../assets/images/logo.png")}
+          style={styles.logo}
+        />
       </View>
     </View>
   );
@@ -20,12 +17,19 @@ export default function Navbar() {
 const styles = StyleSheet.create({
   container: {
     width: Dimensions.get("window").width,
-    flexDirection: "column",
-    padding: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: scale(90),
     borderBottomWidth: 1,
     borderBottomColor: "black",
   },
   icon: {
-    marginBottom: 10,
+    position: "absolute",
+    left: scale(30),
+  },
+  logo: {
+    width: scale(90),
+    height: scale(70),
   },
 });

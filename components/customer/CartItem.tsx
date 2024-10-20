@@ -96,7 +96,7 @@ const CartItem: React.FC<CartItemProps> = ({
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.cropDetail}>Farmer: {item.crop.farmerName}</Text>
+      <Text style={styles.cropDetail}>Farmer: {item.crop.farmerUsername}</Text>
       <Text style={styles.cropDetail}>Address: {item.crop.address}</Text>
       <Text style={styles.cropDetail}>
         Available Quantity: {item.crop.quantity}

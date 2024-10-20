@@ -48,7 +48,7 @@ const CropTable: React.FC<CropTableProps> = ({
               >
                 <Text style={styles.tableCell}>{item.name}</Text>
                 <Text style={styles.tableCell}>₹{item.price}</Text>
-                <Text style={styles.tableCell}>{item.quantity}</Text>
+                <Text style={styles.tableCell}>{item.quantity.toFixed(2)}</Text>
                 <Text
                   style={styles.tableCell}
                   numberOfLines={1}

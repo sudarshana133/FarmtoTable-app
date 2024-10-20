@@ -17,32 +17,38 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ApprovedOrders() {
   const [approvedOrders, setApprovedOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const userContext = useContext(UserAuthContext);
   const user = userContext?.user;
 
-  useEffect(() => {
-    const fetchApprovedOrders = async () => {
-      setLoading(true);
-      const token = await AsyncStorage.getItem("token");
-      if (token && user?.username) {
-        try {
-          const res = await axios.post(
-            "https://project-kdn1.onrender.com/api/order/getapprovedorders",
-            { farmerUsername: user.username, approved: true },
-            { headers: { token: `Bearer ${token}` } }
-          );
-          setApprovedOrders(res.data.orders);
-        } catch (error) {
-          console.error("Error fetching approved orders:", error);
-        } finally {
-          setLoading(false);
-        }
+  const fetchApprovedOrders = async () => {
+    setLoading(true);
+    const token = await AsyncStorage.getItem("token");
+    if (token && user?.username) {
+      try {
+        const res = await axios.post(
+          "https://project-kdn1.onrender.com/api/order/getapprovedorders",
+          { farmerUsername: user.username, approved: true },
+          { headers: { token: `Bearer ${token}` } }
+        );
+        setApprovedOrders(res.data.orders);
+      } catch (error) {
+        console.error("Error fetching approved orders:", error);
+      } finally {
+        setLoading(false);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchApprovedOrders();
   }, [user]);
 
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchApprovedOrders();
+    setIsRefreshing(false);
+  };
   if (loading) {
     return (
       <SafeAreaView
@@ -60,11 +66,13 @@ export default function ApprovedOrders() {
           <FlatList
             showsVerticalScrollIndicator={false}
             data={approvedOrders}
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
             renderItem={({ item }) => (
               <OrderBox order={item} status="approved" />
             )}
             keyExtractor={(item) => item._id}
-            contentContainerStyle={{ marginBottom: scale(20) }} // Apply marginBottom here
+            contentContainerStyle={{ marginBottom: scale(20) }}
           />
         ) : (
           <Text>No Approved Orders</Text>

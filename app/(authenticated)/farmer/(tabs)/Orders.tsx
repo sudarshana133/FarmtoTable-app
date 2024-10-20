@@ -15,7 +15,8 @@ import UserAuthContext from "@/context/UserAuthContext";
 import OrderBox from "@/components/farmer/orders/OrderBox";
 import { Order } from "@/types/order";
 import { useRouter } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
+import { customToast } from "@/components/shared/Toast";
+import { scale } from "react-native-size-matters";
 
 export default function Orders() {
   const [pendingOrder, setPendingOrder] = useState<Order | null>(null);
@@ -24,35 +25,52 @@ export default function Orders() {
   const userContxt = useContext(UserAuthContext);
   const user = userContxt?.user;
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      const token = await AsyncStorage.getItem("token");
-      if (token && user?.username) {
-        try {
-          const resApproved = await axios.post(
-            "https://project-kdn1.onrender.com/api/order/getapprovedorders",
-            { farmerUsername: user.username, approved: true },
-            { headers: { token: `Bearer ${token}` } }
-          );
-          // Uncommented code to fetch pending orders if needed:
-          // const resPending = await axios.post(
-          //   "https://project-kdn1.onrender.com/api/order/getpendingOrders",
-          //   { farmerUsername: user.username, pending: true },
-          //   { headers: { token: `Bearer ${token}` } }
-          // );
-          setApprovedOrder(resApproved.data.orders[0]);
-          // setPendingOrder(resPending.data.orders[0]);
-        } catch (error) {
-          console.error("Error fetching orders:", error);
-        } finally {
-          setLoading(false);
-        }
+  const fetchApprovedOrders = async () => {
+    setLoading(true);
+    const token = await AsyncStorage.getItem("token");
+    if (token && user?.username) {
+      try {
+        const resApproved = await axios.post(
+          "https://project-kdn1.onrender.com/api/order/getapprovedorders",
+          { farmerUsername: user.username },
+          { headers: { token: `Bearer ${token}` } }
+        );
+        setApprovedOrder(resApproved.data.orders[0]);
+      } catch (error: any) {
+        customToast({
+          type: "error",
+          text1: "Error",
+          text2: "Some error occurred while fetching approved orders",
+        });
+      } finally {
+        setLoading(false);
       }
-    };
+    }
+  };
 
-    fetchOrders();
+  const fetchPendingOrders = async () => {
+    setLoading(true);
+    const token = await AsyncStorage.getItem("token");
+    if (token && user?.username) {
+      try {
+        const resPending = await axios.post(
+          "https://project-kdn1.onrender.com/api/order/getpendingOrders",
+          { farmerUsername: user.username, pending: true },
+          { headers: { token: `Bearer ${token}` } }
+        );
+        setPendingOrder(resPending.data.orders[0]);
+      } catch (error: any) {
+        console.log("Error fetching pending orders:", error.response.data);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  useEffect(() => {
+    const getAllOrders = async () => {
+      Promise.all([fetchApprovedOrders()]);
+    };
+    getAllOrders();
   }, [user]);
 
   const goToPendingOrders = () => {
@@ -104,25 +122,25 @@ export default function Orders() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
+    paddingHorizontal: scale(20),
   },
   subtitle: {
-    fontSize: 20,
-    marginVertical: 10,
+    fontSize: scale(20),
+    marginVertical: scale(10),
     fontWeight: "bold",
   },
   marginTop: {
-    marginTop: 20,
+    marginTop: scale(20),
   },
   seeMoreButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
-    paddingVertical: 10,
+    marginTop: scale(10),
+    paddingVertical: scale(10),
   },
   seeMoreText: {
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "bold",
-    marginLeft: 10,
+    marginLeft: scale(10),
   },
 });

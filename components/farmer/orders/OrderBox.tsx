@@ -1,7 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { Order } from "@/types/order";
 import { FontAwesome } from "@expo/vector-icons";
+import OrderItemBox from "./OrderItemBox";
+import { scale } from "react-native-size-matters";
 
 type OrderBoxProps = {
   order: Order;
@@ -15,43 +23,57 @@ export default function OrderBox({
   status,
   showSeeMore = false,
   onSeeMorePress,
+  
 }: OrderBoxProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.customerText}>Customer: {order.customerUsername}</Text>
+        <Text style={styles.customerText}>
+          Customer: {order.customerUsername}
+        </Text>
       </View>
 
       <View style={styles.body}>
-        <View style={styles.item}>
-          <Text style={styles.label}>Crop:</Text>
-          <Text style={styles.value}>{order.cropName}</Text>
+        {/* Move the labels outside */}
+        <View style={styles.labelsRow}>
+          <Text style={styles.label}>Crop</Text>
+          <Text style={styles.label}>Qty</Text>
         </View>
 
-        <View style={styles.item}>
-          <Text style={styles.label}>Qty:</Text>
-          <Text style={styles.value}>{order.quantity}</Text>
-        </View>
+        <FlatList
+          data={order.items}
+          keyExtractor={(item) => item._id.toString()}
+          renderItem={({ item }: { item: (typeof order.items)[0] }) => (
+            <OrderItemBox orderItem={item} />
+          )}
+        />
 
         <View style={styles.item}>
           <Text style={styles.label}>Total Price:</Text>
-          <Text style={styles.value}>₹{order.price.toFixed(2)}</Text>
+          <Text style={styles.value}>₹{order.totalPrice}</Text>
         </View>
 
         <View style={styles.item}>
           <Text style={styles.label}>Billing Date:</Text>
-          <Text style={styles.value}>{new Date(order.OrderPlaceTime).toLocaleDateString()}</Text>
+          <Text style={styles.value}>
+            {new Date(order.OrderPlaceTime).toLocaleDateString()}
+          </Text>
         </View>
 
         {showSeeMore && (
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.approveButton} onPress={onSeeMorePress}>
+            <TouchableOpacity
+              style={styles.approveButton}
+              onPress={onSeeMorePress}
+            >
               <FontAwesome name="check-circle" size={20} color="#fff" />
               <Text style={styles.approveText}>Approved</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.seeMoreButton} onPress={onSeeMorePress}>
-              <FontAwesome name="arrow-right" size={20} color="black" />
+            <TouchableOpacity
+              style={styles.seeMoreButton}
+              onPress={onSeeMorePress}
+            >
               <Text style={styles.seeMoreText}>See More</Text>
             </TouchableOpacity>
           </View>
@@ -63,74 +85,81 @@ export default function OrderBox({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
     borderColor: "#38A3A5",
-    borderWidth: 2,
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 10,
+    borderWidth: scale(2),
+    borderRadius: scale(12),
+    padding: scale(16),
+    marginVertical: scale(6),
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOffset: { width: scale(0), height: scale(3) },
+    shadowOpacity: scale(0.25),
+    shadowRadius: scale(6),
+    elevation: scale(6),
   },
   header: {
-    marginBottom: 10,
+    marginBottom: scale(14),
   },
   customerText: {
-    fontSize: 20,
+    fontSize: scale(22),
     fontWeight: "bold",
-    color: "#333",
+    color: "#38A3A5",
   },
   body: {
-    flexDirection: "column",
-    alignItems: "flex-start",
+    paddingVertical: scale(12),
   },
-  item: {
-    marginBottom: 8,
+  labelsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
+    marginBottom: scale(8),
+    paddingHorizontal: scale(6),
   },
   label: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: scale(14),
     fontWeight: "bold",
+    color: "#666",
   },
-  value: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+  item: {
+    marginBottom: scale(12),
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: scale(6),
+    paddingVertical: scale(8),
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
+    marginTop: scale(12),
   },
   approveButton: {
     backgroundColor: "#38A3A5",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: scale(18),
+    paddingVertical: scale(10),
+    borderRadius: scale(10),
     flexDirection: "row",
     alignItems: "center",
   },
   approveText: {
     color: "#fff",
-    marginLeft: 8,
-    fontSize: 16,
+    marginLeft: scale(8),
+    fontSize: scale(16),
   },
   seeMoreButton: {
     flexDirection: "row",
     alignItems: "center",
   },
   seeMoreText: {
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "bold",
-    marginLeft: 8,
+    marginLeft: scale(8),
     color: "#38A3A5",
+  },
+  value: {
+    fontSize: scale(16),
+    fontWeight: "600",
+    color: "#333",
+    textAlign: "right",
   },
 });

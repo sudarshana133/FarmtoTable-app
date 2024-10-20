@@ -7,11 +7,9 @@ import {
   StyleSheet,
   ActivityIndicator,
   SafeAreaView,
-  Button,
 } from "react-native";
 import { Crop } from "@/types/crop";
 import { Order } from "@/types/order";
-import { useRouter } from "expo-router";
 
 export default function FarmerHome() {
   const userContxt = useContext(UserAuthContext);
@@ -19,18 +17,18 @@ export default function FarmerHome() {
   const [crops, setCrops] = useState<Crop[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const fetchCrops = async () => {
     try {
       const res = await axios.get(
-        `https://project-kdn1.onrender.com/api/farmer/getlatestcrops/${user?.name}`
+        `https://project-kdn1.onrender.com/api/farmer/getlatestcrops/${user?.username}`
       );
       setCrops(res.data);
     } catch (error) {
       console.error("Error fetching crops:", error);
     }
   };
+
   const fetchOrders = async () => {
     try {
       const res = await axios.get(
@@ -43,6 +41,7 @@ export default function FarmerHome() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     (async () => {
       try {
@@ -52,7 +51,6 @@ export default function FarmerHome() {
       }
     })();
   }, [user?.name, user?.username]);
-  
 
   if (loading) {
     return (
@@ -88,9 +86,27 @@ export default function FarmerHome() {
                 ]}
                 key={item._id}
               >
-                <Text style={styles.tableCell} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-                <Text style={styles.tableCell} numberOfLines={1} ellipsizeMode="tail">₹{item.price}</Text>
-                <Text style={styles.tableCell} numberOfLines={1} ellipsizeMode="tail">{item.quantity}</Text>
+                <Text
+                  style={styles.tableCell}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.name}
+                </Text>
+                <Text
+                  style={styles.tableCell}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  ₹{item.price}
+                </Text>
+                <Text
+                  style={styles.tableCell}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.quantity}
+                </Text>
               </View>
             ))}
           </View>
@@ -107,21 +123,51 @@ export default function FarmerHome() {
         {orders.length > 0 ? (
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderCell}>Crop</Text>
               <Text style={styles.tableHeaderCell}>Customer</Text>
+              <Text style={styles.tableHeaderCell}>Crop</Text>
+              <Text style={styles.tableHeaderCell}>Quantity</Text>
               <Text style={styles.tableHeaderCell}>Price</Text>
             </View>
-            {orders.map((item, index) => (
-              <View
-                style={[
-                  styles.tableRow,
-                  index % 2 === 0 ? styles.evenRow : styles.oddRow,
-                ]}
-                key={item._id}
-              >
-                <Text style={styles.tableCell} numberOfLines={1} ellipsizeMode="tail">{item.cropName}</Text>
-                <Text style={styles.tableCell} numberOfLines={1} ellipsizeMode="tail">{item.customerUsername}</Text>
-                <Text style={styles.tableCell} numberOfLines={1} ellipsizeMode="tail">₹{item.price}</Text>
+            {orders.map((order, index) => (
+              <View key={order._id}>
+                {order.items.map((item) => (
+                  <View
+                    style={[
+                      styles.tableRow,
+                      index % 2 === 0 ? styles.evenRow : styles.oddRow,
+                    ]}
+                    key={item._id}
+                  >
+                    <Text
+                      style={styles.tableCell}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {order.customerUsername}
+                    </Text>
+                    <Text
+                      style={styles.tableCell}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {item.crop.name}
+                    </Text>
+                    <Text
+                      style={styles.tableCell}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {item.quantity}
+                    </Text>
+                    <Text
+                      style={styles.tableCell}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      ₹{item.price}
+                    </Text>
+                  </View>
+                ))}
               </View>
             ))}
           </View>
@@ -192,7 +238,7 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     textAlign: "center",
-    textTransform:"capitalize"
+    textTransform: "capitalize",
   },
   evenRow: {
     backgroundColor: "#f9f9f9",
